@@ -1,3 +1,5 @@
+
+
 ![OM_Banner_X2 (1)](https://github.com/user-attachments/assets/853153b7-351a-433d-9e1a-d257b781f93c)
 
 <p align="center">  
@@ -48,7 +50,13 @@ brew install portaudio ffmpeg
 For Linux  
 ```bash
 sudo apt-get update
-sudo apt-get install portaudio19-dev python-dev ffmpeg
+sudo apt-get install curl portaudio19-dev python-dev ffmpeg -y
+# Install and setup uv package manager
+```bash
+curl -LsSf [https://astral.sh/uv/install.sh](https://astral.sh/uv/install.sh) | sh
+# Add uv executable to system PATH (essential for Linux/VM)
+echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 ### Obtain an OpenMind API Key
