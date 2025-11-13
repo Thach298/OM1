@@ -8,6 +8,7 @@ import json5
 from actions.orchestrator import ActionOrchestrator
 from backgrounds.orchestrator import BackgroundOrchestrator
 from fuser import Fuser
+from data_integrity.input_validator import InputValidator
 from inputs.orchestrator import InputOrchestrator
 from providers.io_provider import IOProvider
 from providers.sleep_ticker_provider import SleepTickerProvider
@@ -71,6 +72,7 @@ class CortexRuntime:
         self.sleep_ticker_provider = SleepTickerProvider()
         self.io_provider = IOProvider()
 
+	self.input_validator = InputValidator(config)
         self.last_modified: float = 0.0
         self.config_watcher_task: Optional[asyncio.Task] = None
         self.input_listener_task: Optional[asyncio.Task] = None
@@ -480,6 +482,14 @@ class CortexRuntime:
             if self._is_reloading:
                 logging.debug("Skipping tick during config reload")
                 return
+
+            # ----------------------------------------------------
+            latest_input = await self.config.agent_inputs.get_latest_inputs() 
+
+            if not self.input_validator.validate(latest_input):
+                logging.debug("Skipping tick due to invalid input data quality.")
+                return
+            # ----------------------------------------------------
 
             # collect all the latest inputs
             finished_promises, _ = await self.action_orchestrator.flush_promises()
